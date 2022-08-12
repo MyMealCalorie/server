@@ -21,5 +21,4 @@ app.use(helmet({ crossOriginResourcePolicy: false }));
 app.use('/uploads/img', express.static('uploads'));
 app.use(router);
 
-
 module.exports = app;
