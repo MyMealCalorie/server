@@ -8,7 +8,7 @@ const mySql = {
     // insertPost
     insertUser: async(...params) => {
         return new Promise((resolve, reject) => {
-            const sql = `insert into user(email, password, name, created_at) values(?, ?, ?, now())`;
+            const sql = `insert into users(email, password, name, created_at) values(?, ?, ?, now())`;
             const result = db.query(sql, params, (err, row) => {
                 if(err) {
                     reject(err);
