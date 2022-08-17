@@ -1,12 +1,18 @@
 'use strict';
 
+// Module
+const jwt = require('jsonwebtoken');
+const nodeMailer = require('nodemailer');
+const jwtConfig = require('../../config/jwtConfig');
+
+// Middleware
 const { mySql } = require('../../utils/sql');
 
-// utils
+// Utils
 const encryption = require('../../utils/encryption');
 const regExp = require('../../utils/regexp');
 
-// controller
+// Controller
 const user = {
     // 22.08.08 by Steve / signUp API 기능 구현
     signUp: (req, res) => {
@@ -17,7 +23,7 @@ const user = {
 
         if(!email.trim() || !password.trim() || !name.trim()) {
             res.status(400).json({
-                sucess: false,
+                success: false,
                 message: "필수 항목이 모두 입력되지 않았습니다. 다시 한번 확인해주세요.",
             })
         }
@@ -25,7 +31,7 @@ const user = {
             // 22.08.12 by Steve / signUp - email 정규 표현식 적용
             if(!regExp.isEmail(email)) {
                 res.status(400).json({
-                    sucess: false,
+                    success: false,
                     message: "이메일 형식이 맞지 않습니다. 다시 한번 확인해주세요.",
                 })      
             }
@@ -33,7 +39,7 @@ const user = {
                 // 22.08.12 by Steve / signUp - password 정규 표현식 적용
                 if(!regExp.isPassword(password)) {
                     res.status(400).json({
-                        sucess: false,
+                        success: false,
                         message: "패스워드 형식이 맞지 않습니다. 다시 한번 확인해주세요.",
                     })
                 }
@@ -43,7 +49,7 @@ const user = {
                         if(result.length !== 0) {
                             console.log("result: ", result);
                             res.status(200).json({
-                                sucess: false,
+                                success: false,
                                 message: "중복된 이메일 입니다.",
                             });
                         }
@@ -55,21 +61,21 @@ const user = {
                                 .then((result) => {
                                     console.log("result: ", result);
                                     res.status(200).json({
-                                        sucess: true,
+                                        success: true,
                                         message: "회원가입이 완료되었습니다",
                                         result: result[0],
                                     });
                                 }).catch((err) => {
                                     console.error("result: ", err);
                                     res.status(500).json({
-                                        sucess: false,
+                                        success: false,
                                         message: "서버 에러 입니다.",
                                     })
                                 })
                             }).catch((err) => {
                                 console.error("result: ", err);
                                 res.status(500).json({
-                                    sucess: false,
+                                    success: false,
                                     message: "서버 에러 입니다.",
                                 })
                             })
@@ -77,7 +83,7 @@ const user = {
                     }).catch((err) => {
                         console.error("result: ", err);
                         res.status(500).json({
-                            sucess: false,
+                            success: false,
                             message: "서버 에러 입니다.",
                         });
                     })
@@ -95,7 +101,7 @@ const user = {
 
         if(!email.trim() || !password.trim()) {
             res.status(417).json({
-                sucess: false,
+                success: false,
                 message: "필수 항목이 모두 입력되지 않았습니다. 다시 한번 확인해주세요.",
             })
         }
@@ -103,7 +109,7 @@ const user = {
             // 22.08.12 by Steve / signIn - email 정규 표현식 적용
             if(!regExp.isEmail(email)) {
                 res.status(400).json({
-                    sucess: false,
+                    success: false,
                     message: "이메일 형식이 맞지 않습니다. 다시 한번 확인해주세요.",
                 })      
             }
@@ -113,7 +119,7 @@ const user = {
                     if(result.length === 0) {
                         console.log("result: ", result);
                         res.status(404).json({
-                            sucess: false,
+                            success: false,
                             message: "회원정보를을 찾을 수 없습니다.",
                         });
                     }
@@ -124,24 +130,39 @@ const user = {
                             // if(params[0] === result[0].email && params[1] !== result[0].password) {
                             if(params[0] === result[0].email && !encryption.match(password, result[0].password)) {
                                 res.status(403).json({
-                                    sucess: false,
+                                    success: false,
                                     message: "잘못된 패스워드입니다.",
                                 });
                             }
                             // 22.08.12 by Steve / 기존의 password 확인 코드 주석처리(추후 삭제 예정)
                             // if(params[0] === result[0].email && params[1] === result[0].password) {
                             if(params[0] === result[0].email && encryption.match(password, result[0].password)) {
-                                res.status(200).json({
-                                    sucess: true,
-                                    message: "로그인에 성공하였습니다.",
-                                    accessToken: 'accessToken',
-                                    result: result[0],
-                                }); 
+                                jwt.sign({
+                                    email: result[0].email,
+                                    name: result[0].name
+                                }, jwtConfig.secret, {
+                                    expiresIn: '1d'
+                                }, (err, token) => {
+                                    if(err) {
+                                        res.status(401).json({
+                                            status: false,
+                                            message: "로그인을 해주세요."
+                                        });
+                                    }
+                                    if(!err) {
+                                        res.status(200).json({
+                                            success: true,
+                                            message: "로그인에 성공하였습니다.",
+                                            accessToken: token,
+                                            result: result[0],
+                                        });
+                                    }
+                                })
                             }
                         }).catch((err) => {
                             console.error("result: ", err);
                             res.status(500).json({
-                                sucess: false,
+                                success: false,
                                 message: "서버 에러 입니다.",
                             })
                         })
@@ -149,7 +170,7 @@ const user = {
                 }).catch((err) => {
                     console.error("result: ", err);
                     res.status(500).json({
-                        sucess: false,
+                        success: false,
                         message: "서버 에러 입니다.",
                     });
                 }) 

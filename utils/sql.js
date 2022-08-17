@@ -14,8 +14,8 @@ const mySql = {
                     reject(err);
                 }
                 if(!err) {
-                    const _id = row.insertUser;
-                    resolve(_id);
+                    const user_id = row.insertId;
+                    resolve(user_id);
                 }
             })
             const queryLog = result.sql;
