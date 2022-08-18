@@ -1,6 +1,6 @@
 'use strict';
 
-// modules
+// Modules
 const express = require('express');
 const router = express.Router();
 const multer = require('multer');
@@ -26,10 +26,10 @@ const upload = multer({
     }),
 });
 
-// controller
+// Controller
 const ctrl = require('./images.crtl');
 
-// router
+// Router
 router.post('/', upload.single('image'), ctrl.image);
 
 module.exports = router;

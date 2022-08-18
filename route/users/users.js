@@ -1,13 +1,13 @@
 'use strict';
 
-// modules
+// Modules
 const express = require('express');
 const router = express.Router();
 
-// controller
+// Controller
 const ctrl = require('./users.crtl');
 
-// router
+// Router
 router.post('/signup', ctrl.user.signUp);
 router.post('/signin', ctrl.user.signIn);
 

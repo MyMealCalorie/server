@@ -26,9 +26,9 @@ const encryption = {
     },
     hash: (value) => {
         const hashValue = bcrypt.hashSync(value, encryption.salt());
-        return hashValue;
+        // return hashValue;
         // 22.08.12 by Steve / bcrypt 미적용시 value return
-        // return value;
+        return value;
     },
     match: (value, hashedValue) => {
         const compare = bcrypt.compareSync(value, hashedValue);
