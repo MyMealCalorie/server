@@ -73,7 +73,7 @@ Modal
 
 ## ERD
 
-![image-20220830055132598](C:\Users\chanc\AppData\Roaming\Typora\typora-user-images\image-20220830055132598.png)
+![image](https://user-images.githubusercontent.com/46704032/187298703-ea4561d7-252d-4193-b75f-070312609621.png)
 
 
 
